@@ -5,7 +5,7 @@ function Orders() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    api.get("/orders")
+    api.get("/Order")
       .then(res => setOrders(res.data))
       .catch(err => console.error(err));
   }, []);
