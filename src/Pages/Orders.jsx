@@ -7,17 +7,14 @@ function Orders() {
   useEffect(() => {
     api.get("/orders")
       .then(res => setOrders(res.data))
-      .catch(() => alert("Failed to load orders"));
+      .catch(err => console.error(err));
   }, []);
 
   return (
-    <div style={{ padding: 30 }}>
+    <div>
       <h2>Orders</h2>
-
       {orders.map(o => (
-        <div key={o.id}>
-          {o.customerName} - {o.totalAmount}
-        </div>
+        <div key={o.id}>{o.customerName} - {o.totalAmount}</div>
       ))}
     </div>
   );
