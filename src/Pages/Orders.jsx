@@ -3,38 +3,64 @@ import api from "../api/api";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
+  const [inventories, setInventories] = useState([]);
+
+  const [inventoryId, setInventoryId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [totalPrice, setTotalPrice] = useState("");
 
   const loadOrders = () => {
-    api.get("/Order")
-      .then(res => setOrders(res.data));
+    api.get("/Order").then(res => setOrders(res.data));
+  };
+
+  const loadInventories = () => {
+    api.get("/inventory").then(res => setInventories(res.data));
   };
 
   useEffect(() => {
     loadOrders();
+    loadInventories();
   }, []);
 
   const createOrder = async () => {
-    await api.post("/Order", {
-      customerName,
-      totalPrice
-    });
+    try {
+      await api.post("/Order", {
+        inventoryId,
+        customerName,
+        totalPrice: parseFloat(totalPrice)
+      });
 
-    setCustomerName("");
-    setTotalPrice("");
-    loadOrders();
+      setInventoryId("");
+      setCustomerName("");
+      setTotalPrice("");
+      loadOrders();
+    } catch (err) {
+      alert(err.response?.data || "Failed to create order");
+    }
   };
 
   return (
     <div style={{ padding: 30 }}>
       <h2>Create Order</h2>
 
+      <select value={inventoryId} onChange={e => setInventoryId(e.target.value)}>
+        <option value="">Select Cylinder</option>
+        {inventories.map(i => (
+          <option key={i.id} value={i.id}>
+            {i.name}
+          </option>
+        ))}
+      </select>
+
+      <br /><br />
+
       <input
         placeholder="Customer Name"
         value={customerName}
         onChange={e => setCustomerName(e.target.value)}
       />
+
+      <br /><br />
 
       <input
         placeholder="Total Price"
@@ -43,7 +69,9 @@ function Orders() {
         onChange={e => setTotalPrice(e.target.value)}
       />
 
-      <button onClick={createOrder}>Create</button>
+      <br /><br />
+
+      <button onClick={createOrder}>Create Order</button>
 
       <hr />
 
